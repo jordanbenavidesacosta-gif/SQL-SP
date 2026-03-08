@@ -1,0 +1,21 @@
+CREATE PROCEDURE sp_vehicle_service_summary
+AS
+BEGIN
+
+SET NOCOUNT ON;
+
+SELECT
+    v.plate,
+    COUNT(o.order_id) AS total_services,
+    MAX(o.created_date) AS last_service_date
+
+FROM vehicles v
+
+LEFT JOIN service_orders o
+ON v.vehicle_id = o.vehicle_id
+
+GROUP BY v.plate
+
+ORDER BY total_services DESC
+
+END

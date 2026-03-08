@@ -1,0 +1,48 @@
+CREATE PROCEDURE sp_create_service_order
+(
+    @vehicle_id INT,
+    @service_type VARCHAR(100),
+    @created_by UNIQUEIDENTIFIER
+)
+AS
+BEGIN
+
+SET NOCOUNT ON;
+
+BEGIN TRY
+
+    BEGIN TRANSACTION
+
+    INSERT INTO service_orders
+    (
+        vehicle_id,
+        service_type,
+        order_status,
+        created_date,
+        created_by
+    )
+    VALUES
+    (
+        @vehicle_id,
+        @service_type,
+        'OPEN',
+        GETDATE(),
+        @created_by
+    )
+
+    UPDATE vehicles
+    SET status = 'IN_SERVICE'
+    WHERE vehicle_id = @vehicle_id
+
+    COMMIT TRANSACTION
+
+END TRY
+BEGIN CATCH
+
+    ROLLBACK TRANSACTION
+
+    THROW
+
+END CATCH
+
+END

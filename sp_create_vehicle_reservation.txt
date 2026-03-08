@@ -1,0 +1,42 @@
+CREATE PROCEDURE sp_create_vehicle_reservation
+(
+    @vehicle_id INT,
+    @start_date DATETIME,
+    @end_date DATETIME
+)
+AS
+BEGIN
+
+SET NOCOUNT ON;
+
+IF EXISTS
+(
+    SELECT 1
+    FROM vehicle_reservations
+    WHERE vehicle_id = @vehicle_id
+    AND @start_date <= end_date
+    AND @end_date >= start_date
+)
+BEGIN
+
+    RAISERROR('Vehicle already has a reservation in this period.',16,1)
+    RETURN
+
+END
+
+INSERT INTO vehicle_reservations
+(
+    vehicle_id,
+    start_date,
+    end_date,
+    created_date
+)
+VALUES
+(
+    @vehicle_id,
+    @start_date,
+    @end_date,
+    GETDATE()
+)
+
+END

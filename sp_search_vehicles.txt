@@ -1,0 +1,23 @@
+CREATE PROCEDURE sp_search_vehicles
+(
+    @plate VARCHAR(20) = NULL,
+    @brand VARCHAR(50) = NULL
+)
+AS
+BEGIN
+
+SET NOCOUNT ON;
+
+SELECT
+    vehicle_id,
+    plate,
+    brand,
+    model
+
+FROM vehicles
+
+WHERE
+    (@plate IS NULL OR plate LIKE '%' + @plate + '%')
+AND (@brand IS NULL OR brand = @brand)
+
+END
