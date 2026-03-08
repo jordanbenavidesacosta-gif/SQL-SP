@@ -1,0 +1,24 @@
+CREATE PROCEDURE sp_get_recent_orders
+(
+    @months_back INT = 3
+)
+AS
+BEGIN
+
+SET NOCOUNT ON;
+
+SELECT
+    order_id,
+    vehicle_plate,
+    service_type,
+    provider_name,
+    order_status,
+    created_date
+
+FROM service_orders
+
+WHERE created_date >= DATEADD(MONTH, -@months_back, GETDATE())
+
+ORDER BY created_date DESC;
+
+END
