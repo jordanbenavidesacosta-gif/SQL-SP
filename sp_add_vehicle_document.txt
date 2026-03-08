@@ -1,0 +1,48 @@
+CREATE PROCEDURE sp_add_vehicle_document
+(
+    @vehicle_id INT,
+    @document_type INT,
+    @document_number VARCHAR(50),
+    @expiration_date DATE
+)
+AS
+BEGIN
+
+IF EXISTS(
+    SELECT 1 
+    FROM vehicle_documents
+    WHERE vehicle_id = @vehicle_id
+    AND document_type = @document_type
+)
+BEGIN
+
+    UPDATE vehicle_documents
+    SET
+        document_number = @document_number,
+        expiration_date = @expiration_date,
+        updated_at = GETDATE()
+
+END
+ELSE
+BEGIN
+
+    INSERT INTO vehicle_documents
+    (
+        vehicle_id,
+        document_type,
+        document_number,
+        expiration_date,
+        created_at
+    )
+    VALUES
+    (
+        @vehicle_id,
+        @document_type,
+        @document_number,
+        @expiration_date,
+        GETDATE()
+    )
+
+END
+
+END
