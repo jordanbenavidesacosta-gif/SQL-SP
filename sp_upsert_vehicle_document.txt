@@ -1,0 +1,62 @@
+CREATE PROCEDURE sp_upsert_vehicle_document
+(
+    @vehicle_id INT,
+    @document_type_id INT,
+    @document_number VARCHAR(50),
+    @expiration_date DATE,
+    @issued_date DATE,
+    @user_id UNIQUEIDENTIFIER
+)
+AS
+BEGIN
+
+SET NOCOUNT ON;
+
+IF EXISTS
+(
+    SELECT 1
+    FROM vehicle_documents
+    WHERE vehicle_id = @vehicle_id
+    AND document_type_id = @document_type_id
+)
+BEGIN
+
+    UPDATE vehicle_documents
+    SET
+        document_number = @document_number,
+        expiration_date = @expiration_date,
+        issued_date = @issued_date,
+        updated_at = GETDATE(),
+        updated_by = @user_id
+
+    WHERE vehicle_id = @vehicle_id
+    AND document_type_id = @document_type_id;
+
+END
+ELSE
+BEGIN
+
+    INSERT INTO vehicle_documents
+    (
+        vehicle_id,
+        document_type_id,
+        document_number,
+        expiration_date,
+        issued_date,
+        created_at,
+        created_by
+    )
+    VALUES
+    (
+        @vehicle_id,
+        @document_type_id,
+        @document_number,
+        @expiration_date,
+        @issued_date,
+        GETDATE(),
+        @user_id
+    );
+
+END
+
+END
